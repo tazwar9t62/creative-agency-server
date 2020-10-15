@@ -27,6 +27,8 @@ const client = new MongoClient(
     const orderCollection = client.db("creative-agency").collection("orders");
     // console.log('database connected');
 
+    //GET
+
     app.get("/services" , (req, res) => {        
         serviceCollection.find({})
         .toArray((err, documents)=>{
@@ -41,9 +43,26 @@ const client = new MongoClient(
       })
   })
 
+  app.get("/allOrders", (req, res) => {
+    orderCollection.find({})
+    .toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+  
+  app.get("/orderedServices", (req, res) => {
+    orderCollection
+      .find({ email: req.query.email })
+      .toArray((err, documents) => {
+        res.send(documents);
+      });
+  });
+
+  //POST
+
   app.post('/isAdmin', (req, res) => {
     const email = req.body.email;
-    doctorCollection.find({ email: email })
+    adminCollection.find({ email: email })
         .toArray((err, admins) => {
             res.send(admins.length > 0);
         })
@@ -93,6 +112,8 @@ app.post("/addAdmin", (req, res) => {
     res.send(result.insertedCount > 0);
   });
 });
+
+
 
   });
   app.get("/", (req, res) => {
